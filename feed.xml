@@ -12,11 +12,97 @@ http://slaejae.com
 AJ's Blog
 </description>
 <lastBuildDate>
-Wed, 12 Jul 2017 12:32:08 -0700
+Fri, 18 Aug 2017 13:58:47 -0700
 </lastBuildDate>
 <generator>
 clj-rss
 </generator>
+<item>
+<guid>
+http://slaejae.com/posts-output/2017-08-17-understanding-macros/
+</guid>
+<link>
+http://slaejae.com/posts-output/2017-08-17-understanding-macros/
+</link>
+<title>
+Macros
+</title>
+<description>
+&lt;h3 id=&quot;macros&amp;#95;with&amp;#95;clojure&quot;&gt;Macros With Clojure&lt;/h3&gt;&lt;p&gt;One of the benefits of Clojure is that it's a dialect of lisp and homoiconic. There are already many &lt;a href='https://spin.atomicobject.com/2013/07/23/homoiconicity-clojure-macros/'&gt;great blog posts&lt;/a&gt; on homoiconicity so I won't go into it much. The main idea though is that when clojure is parsed, it already looks like an AST due to the fact that the code itself is a data structure. This helps mitigate some of the complexity that is introduced when implementing meta-programming.&lt;/p&gt;&lt;p&gt;One of my favorite examples of the power of macros in Clojure is in the book &lt;a href='http://shop.oreilly.com/product/0636920013754.do'&gt;Clojure Programming&lt;/a&gt;. They give the example of the Java for loop that was enhanced.&lt;/p&gt;&lt;pre&gt;&lt;code&gt;for &amp;#40;int i = 0; i &amp;lt; collection.size&amp;#40;&amp;#41;; i++&amp;#41; {
+    SomeType var = &amp;#40;SomeType&amp;#41;collection.get&amp;#40;i&amp;#41;;
+    ...
+}
+
+//enhanced and more conise version
+for &amp;#40;SomeType var : collection&amp;#41; {
+    ...
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&quot;Adding enhanced for to Java requires a change at the compiler level, and the average user does not have the knowledge or ability to make that change. So what did Java developers do for those first eight years without this helpful language feature? They lived without it.&lt;/p&gt;&lt;p&gt;In contrast, any Clojure programmer, in matter of minutes and in a few lines of unprivileged Clojure code, can write a macro to add an imperative looping construct to Clojure that is similar to Java 5’s enhanced for&quot;&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;defmacro foreach &amp;#91;&amp;#91;sym coll&amp;#93; &amp;amp; body&amp;#93;
+  `&amp;#40;loop &amp;#91;coll# &amp;#126;coll&amp;#93;
+     &amp;#40;when-let &amp;#91;&amp;#91;&amp;#126;sym &amp;amp; xs#&amp;#93; &amp;#40;seq coll#&amp;#41;&amp;#93;
+       &amp;#126;@body
+       &amp;#40;recur xs#&amp;#41;&amp;#41;&amp;#41;&amp;#41;
+;= #'user/foreach
+&amp;#40;foreach &amp;#91;x &amp;#91;1 2 3&amp;#93;&amp;#93;
+  &amp;#40;println x&amp;#41;&amp;#41;
+; 1
+; 2
+; 3
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&quot;why&amp;#95;macros?&quot;&gt;Why Macros?&lt;/h3&gt;&lt;ul&gt;&lt;li&gt;Macros allow the compiler to be extended by user code.&lt;/li&gt;&lt;li&gt;Macros allow you to derive functionality from primitive functions and special forms.&lt;/li&gt;&lt;li&gt;Macros can allow code to be more declaritive than imperitive.&lt;/li&gt;&lt;li&gt;If you want to make your code more concise and clear as to what your intent is.&lt;/li&gt;&lt;li&gt;If you want to add new control flow structures to your language as a library.&lt;/li&gt;&lt;li&gt;If you want to abstract away code from the caller and make your code's purpose more obvious.&lt;/li&gt;&lt;li&gt;In some cases the only way of getting rid duplicate code is to create a macro.&lt;/li&gt;&lt;li&gt;Specifically in Clojurescript when you want to leverage the JVM at compiletime before runtime happens on the Javascript VM.&lt;/li&gt;&lt;li&gt;When you want to speed things up and implement computational work at compile time.&lt;/li&gt;&lt;/ul&gt;&lt;h3 id=&quot;building&amp;#95;blocks&amp;#95;of&amp;#95;macros&quot;&gt;Building Blocks of Macros&lt;/h3&gt;&lt;p&gt;Below are the basic building blocks required when building macros:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Quote: '&lt;/li&gt;&lt;/ul&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;'&amp;#40;+ 1 2 3&amp;#41;
+=&amp;gt; &amp;#40;+ 1 2 3&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;&lt;li&gt;Unquote: ~ (Usually used within a syntax-quote)&lt;/li&gt;&lt;/ul&gt;&lt;pre&gt;&lt;code&gt;&amp;#40;let &amp;#91;x 2&amp;#93;
+    `&amp;#40;1 &amp;#126;x 3&amp;#41;&amp;#41;
+=&amp;gt; &amp;#40;1 2 3&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;&lt;li&gt;Syntax Quote: ` (Looks very similar to a quote but it's not!)&lt;/li&gt;&lt;/ul&gt;&lt;pre&gt;&lt;code&gt;&amp;#40;let &amp;#91;x 2&amp;#93;
+    `&amp;#40;1 x 3&amp;#41;&amp;#41;
+=&amp;gt; &amp;#40;1 user/x 3&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;&lt;li&gt;Unquote Splice: ~@&lt;/li&gt;&lt;/ul&gt;&lt;pre&gt;&lt;code&gt;`&amp;#40;1 2 &amp;#126;&amp;#40;list 3 4&amp;#41;&amp;#41;   =&amp;gt;  &amp;#40;1 2 &amp;#40;3 4&amp;#41;&amp;#41;
+`&amp;#40;1 2 &amp;#126;@&amp;#40;list 3 4&amp;#41;&amp;#41;  =&amp;gt;  &amp;#40;1 2 3 4&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;&lt;li&gt;Auto Gensym #&lt;/li&gt;&lt;/ul&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;defmacro m &amp;#91;&amp;#93; `&amp;#40;let &amp;#91;x# 1&amp;#93; x#&amp;#41;&amp;#41;
+
+&amp;#40;macroexpand '&amp;#40;m&amp;#41;&amp;#41;
+=&amp;gt; &amp;#40;let&amp;#42; &amp;#91;x&amp;#95;&amp;#95;10466&amp;#95;&amp;#95;auto&amp;#95;&amp;#95; 1&amp;#93; x&amp;#95;&amp;#95;10466&amp;#95;&amp;#95;auto&amp;#95;&amp;#95;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You'll notice I used macroexpand, this is a handy tool in the repl that allows you to see your code in between what is read and what is evaluated. (also known as macro expansion time)&lt;/p&gt;&lt;h3 id=&quot;limitations&amp;#95;of&amp;#95;macros&quot;&gt;Limitations of Macros&lt;/h3&gt;&lt;p&gt;Macros can't be passed as a higher order functions. For example, you wouldn't be able to map a collection over a macro. What is valid with a basic function is clojure isn't aloud with a macro. This is because macros don't always? evaluate their arguments before the actual macro, whereas a function would.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;defn add-2 &amp;#91;x&amp;#93; &amp;#40;+ x 2&amp;#41;&amp;#41;
+=&amp;gt; #'user/add-2
+&amp;#40;map add-2 &amp;#40;range 3&amp;#41;&amp;#41;
+=&amp;gt; &amp;#40;2 3 4&amp;#41;
+
+;;Not aloud with macros
+&amp;#40;defmacro add-2 &amp;#91;x&amp;#93; `&amp;#40;+ &amp;#126;x 2&amp;#41;&amp;#41;
+=&amp;gt; #'user/add-2
+&amp;#40;map add-2 &amp;#40;range 3&amp;#41;&amp;#41;
+=&amp;gt; CompilerException java.lang.RuntimeException: Can't take value of a macro: #'user/add-2
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In some cases you are able to wrap an anonymous function around your macro as a work around, but as your macros get more complex it is more likely to not work.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;map #&amp;#40;add-2 %&amp;#41; &amp;#40;range 3&amp;#41;&amp;#41;
+=&amp;gt; &amp;#40;2 3 4&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&quot;tips&amp;#95;when&amp;#95;creating&amp;#95;macros&quot;&gt;Tips when creating macros&lt;/h3&gt;&lt;p&gt;The main rule of macros is to never write a macro when a function will do. What I've read is that a clojure project should have no more than 5 macros. There are many opinions on this however and depending on the use case it can make sense to increase that limit. Paul Graham mentioned that his code base at ViaWeb consisted of about &lt;a href='http://www.paulgraham.com/avg.html'&gt;25% macros&lt;/a&gt;. Steve Yegge has also criticized the Clojure community for being &lt;a href='https://groups.google.com/d/msg/seajure/GLqhj_2915A/f-JpotiBTfAJ'&gt;too prescriptive with coding styles&lt;/a&gt;. For me personally I'd still try to remain within that limit to reduce complexity. If possible, break apart your macros so that within the macros you are calling helper functions instead of having it be apart of your macro.&lt;/p&gt;&lt;p&gt;Think in terms of data instead of code. In Colin Jones &lt;a href='https://pragprog.com/book/cjclojure/mastering-clojure-macros'&gt;book&lt;/a&gt;, he talks about an interesting method when thinking about macros and compares it to stepping on a ladder. When you expand a macro during the macro expansion process, you take a step up the ladder and shift from thinking in code to thinking in data. When you evaluate the macro you take a step down and think in terms of code. Depending on the amount of expansions per macro, you can be stepping up and down several steps.&lt;/p&gt;
+</description>
+<author>
+AJ Taylor
+</author>
+<pubDate>
+Thu, 17 Aug 2017 00:00:00 -0700
+</pubDate>
+</item>
+<item>
+<guid>
+http://slaejae.com/posts-output/2017-07-12-recent-thoughts/
+</guid>
+<link>
+http://slaejae.com/posts-output/2017-07-12-recent-thoughts/
+</link>
+<title>
+Learning clojure
+</title>
+<description>
+&lt;h3 id=&quot;things&amp;#95;to&amp;#95;bring&amp;#95;up&quot;&gt;Things to bring up&lt;/h3&gt;&lt;p&gt; They say the more you learn the more you know what you dont know.&lt;/p&gt;&lt;p&gt; Recently I've been thinking about what I've been able to learn as I've been coding in clojure.&lt;/p&gt;&lt;p&gt; Thing's that have been beneficial&lt;/p&gt;&lt;p&gt; Learning how open source communites work.&lt;/p&gt;&lt;p&gt; Understanding more the process of languages.&lt;/p&gt;&lt;p&gt; Interest in programming language design.&lt;/p&gt;&lt;p&gt; Reading more text books&lt;/p&gt;&lt;p&gt; Documentation is huge (obviously)&lt;/p&gt;&lt;p&gt; Be involved in the online community on slack and irc.&lt;/p&gt;&lt;p&gt; Some things that changed the way I had to think.&lt;/p&gt;&lt;p&gt; Lazy Sequence Abstraction&lt;/p&gt;&lt;p&gt; Map, Filter, Reduce&lt;/p&gt;&lt;p&gt; Function 1 -&gt; Function 2 -&gt; Function 3&lt;/p&gt;&lt;p&gt; Tools. Cider and Emacs. Repl. Figwheel.&lt;/p&gt;&lt;p&gt; Clojure has a lot of smart people in the community. Alex Miller, Rich Hickey, David Nolan, Yogthos.&lt;/p&gt;&lt;p&gt; Writing is like programming. Iterate through.&lt;/p&gt;&lt;p&gt; Bring up stuff that I've learned specifically from reading books&lt;/p&gt;&lt;p&gt; Top books are Joy of Clojure, Clojure Applied, Living Clojure, and Programming Clojure.&lt;/p&gt;&lt;p&gt; Podcasts are your friend: Cognicast and Defn&lt;/p&gt;&lt;p&gt; Immutability is awesome&lt;/p&gt;&lt;p&gt; Applying paradigms in other tech areas such as with big data. Things like what Nathan Marz has been working on.&lt;/p&gt;&lt;p&gt; Clojure helps manage complexity. Other benefits follow.&lt;/p&gt;&lt;p&gt; Unique code libraries for clojure. Re-frame.&lt;/p&gt;&lt;p&gt; Downsides to clojure (maybe)&lt;/p&gt;&lt;p&gt; Taking a risk with clojure.&lt;/p&gt;&lt;p&gt; Datomic&lt;/p&gt;&lt;p&gt; Talk about what you are learning with big data&lt;/p&gt;&lt;p&gt; Talk about how it applies to 'complecting' things&lt;/p&gt;&lt;p&gt; Write a blog post about the cap theorem&lt;/p&gt;
+</description>
+<author>
+AJ Taylor
+</author>
+<pubDate>
+Wed, 12 Jul 2017 00:00:00 -0700
+</pubDate>
+</item>
 <item>
 <guid>
 http://slaejae.com/posts-output/2017-07-07-hello-world/
