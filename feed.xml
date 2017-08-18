@@ -12,7 +12,7 @@ http://slaejae.com
 AJ's Blog
 </description>
 <lastBuildDate>
-Fri, 18 Aug 2017 13:58:47 -0700
+Fri, 18 Aug 2017 14:03:24 -0700
 </lastBuildDate>
 <generator>
 clj-rss
@@ -81,26 +81,6 @@ AJ Taylor
 </author>
 <pubDate>
 Thu, 17 Aug 2017 00:00:00 -0700
-</pubDate>
-</item>
-<item>
-<guid>
-http://slaejae.com/posts-output/2017-07-12-recent-thoughts/
-</guid>
-<link>
-http://slaejae.com/posts-output/2017-07-12-recent-thoughts/
-</link>
-<title>
-Learning clojure
-</title>
-<description>
-&lt;h3 id=&quot;things&amp;#95;to&amp;#95;bring&amp;#95;up&quot;&gt;Things to bring up&lt;/h3&gt;&lt;p&gt; They say the more you learn the more you know what you dont know.&lt;/p&gt;&lt;p&gt; Recently I've been thinking about what I've been able to learn as I've been coding in clojure.&lt;/p&gt;&lt;p&gt; Thing's that have been beneficial&lt;/p&gt;&lt;p&gt; Learning how open source communites work.&lt;/p&gt;&lt;p&gt; Understanding more the process of languages.&lt;/p&gt;&lt;p&gt; Interest in programming language design.&lt;/p&gt;&lt;p&gt; Reading more text books&lt;/p&gt;&lt;p&gt; Documentation is huge (obviously)&lt;/p&gt;&lt;p&gt; Be involved in the online community on slack and irc.&lt;/p&gt;&lt;p&gt; Some things that changed the way I had to think.&lt;/p&gt;&lt;p&gt; Lazy Sequence Abstraction&lt;/p&gt;&lt;p&gt; Map, Filter, Reduce&lt;/p&gt;&lt;p&gt; Function 1 -&gt; Function 2 -&gt; Function 3&lt;/p&gt;&lt;p&gt; Tools. Cider and Emacs. Repl. Figwheel.&lt;/p&gt;&lt;p&gt; Clojure has a lot of smart people in the community. Alex Miller, Rich Hickey, David Nolan, Yogthos.&lt;/p&gt;&lt;p&gt; Writing is like programming. Iterate through.&lt;/p&gt;&lt;p&gt; Bring up stuff that I've learned specifically from reading books&lt;/p&gt;&lt;p&gt; Top books are Joy of Clojure, Clojure Applied, Living Clojure, and Programming Clojure.&lt;/p&gt;&lt;p&gt; Podcasts are your friend: Cognicast and Defn&lt;/p&gt;&lt;p&gt; Immutability is awesome&lt;/p&gt;&lt;p&gt; Applying paradigms in other tech areas such as with big data. Things like what Nathan Marz has been working on.&lt;/p&gt;&lt;p&gt; Clojure helps manage complexity. Other benefits follow.&lt;/p&gt;&lt;p&gt; Unique code libraries for clojure. Re-frame.&lt;/p&gt;&lt;p&gt; Downsides to clojure (maybe)&lt;/p&gt;&lt;p&gt; Taking a risk with clojure.&lt;/p&gt;&lt;p&gt; Datomic&lt;/p&gt;&lt;p&gt; Talk about what you are learning with big data&lt;/p&gt;&lt;p&gt; Talk about how it applies to 'complecting' things&lt;/p&gt;&lt;p&gt; Write a blog post about the cap theorem&lt;/p&gt;
-</description>
-<author>
-AJ Taylor
-</author>
-<pubDate>
-Wed, 12 Jul 2017 00:00:00 -0700
 </pubDate>
 </item>
 <item>
